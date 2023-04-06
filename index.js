@@ -19,7 +19,7 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
-app.use("/student", Student);
+app.use("/", Student);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
