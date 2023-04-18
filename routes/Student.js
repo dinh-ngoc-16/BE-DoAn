@@ -72,4 +72,12 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.patch("/:id/subject", async (req, res) => {
+  try{
+    console.log(req.params)
+    let updateStudent = await SinhVien.findOneAndUpdate({ _id: req.params.id }, req.body);
+    res.status(200).json(updateStudent);
+  }catch(error){}
+})
+
 module.exports = router;
