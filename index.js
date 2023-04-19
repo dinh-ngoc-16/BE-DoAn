@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const Student = require("./routes/Student.js");
+const Subject = require("./routes/Subject.js");
 
 dotenv.config();
 
@@ -19,7 +20,8 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
-app.use("/", Student);
+app.use("/student", Student);
+app.use("/subject", Subject);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
