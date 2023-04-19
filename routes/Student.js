@@ -4,13 +4,10 @@ const jwt = require("jsonwebtoken");
 const Khoa = require("../models/van_lang/Khoa");
 const MonHoc = require("../models/van_lang/MonHoc");
 const SinhVien = require("../models/van_lang/SinhVien");
-const { verifyToken } = require("./VerifyToken");
+const { verifyToken, verifyTokenAndAuthorization } = require("./VerifyToken");
 
-router.get("/:id", verifyToken, async (req, res) => {
-  console.log(req.params);
+router.get("/:id", verifyTokenAndAuthorization, async (req, res) => {
   try {
-    // students = await Khoa.find();
-    // count = await Khoa.find().count();
     let sinhVienData = await SinhVien.find({ _id: req.params.id })
       .populate(["MH", "khoa"])
       .exec();
@@ -52,6 +49,7 @@ router.post("/login", async (req, res) => {
       student.pass,
       process.env.PASS_SEC,
     );
+
     const OriginalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
 
     if (OriginalPassword !== req.body.pass) {
@@ -59,7 +57,7 @@ router.post("/login", async (req, res) => {
     }
     const accessToken = jwt.sign(
       {
-        id: student.userName,
+        id: student.id,
       },
       process.env.JWT_SEC,
       { expiresIn: "1d" },
@@ -73,11 +71,16 @@ router.post("/login", async (req, res) => {
 });
 
 router.patch("/:id/subject", async (req, res) => {
-  try{
-    console.log(req.params)
-    let updateStudent = await SinhVien.findOneAndUpdate({ _id: req.params.id }, req.body);
+  try {
+    console.log(req.params);
+    let updateStudent = await SinhVien.findOneAndUpdate(
+      { _id: req.params.id },
+      req.body,
+    );
     res.status(200).json(updateStudent);
-  }catch(error){}
-})
+  } catch (error) {
+    res.status(500).json(updateStudent);
+  }
+});
 
 module.exports = router;

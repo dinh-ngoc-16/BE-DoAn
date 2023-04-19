@@ -6,26 +6,23 @@ const SinhVien = require("../models/van_lang/SinhVien");
 const { verifyToken } = require("./VerifyToken");
 
 router.get("/", async (req, res) => {
-  console.log(req.headers);
   try {
     let data = await MonHoc.find({
       "lichHoc.ngayBD": {
-        $gt: new Date("2023-01-25"),
-        $lt: new Date("2023-02-02"),
+        $eq: new Date("2023-04-16"),
       },
     });
-    console.log(data);
-    res.status(200).json(data);
+
+    res.status(200).json({ data, count: data.length });
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
-router.get("/create", async (req, res) => {
-  console.log(req.headers);
+router.post("/create", async (req, res) => {
   try {
     let subject = new MonHoc({
-      tenMonHoc: "Toan Cao Cap3",
+      tenMonHoc: "Toan Cao Cap 5",
       maMonHoc: "DIA19000",
       id_khoa: "6408d07d4f19e1d44681911d",
       diaDiem: "CS2",
@@ -33,12 +30,11 @@ router.get("/create", async (req, res) => {
       lichHoc: {
         buoiHoc: "2-5",
         ca: 2.0,
-        ngayBD: new Date("2023-12-30").toISOString(),
-        ngayKT: new Date("2023-01-30").toISOString(),
+        ngayBD: new Date("2023-04-16").toISOString(),
+        ngayKT: new Date("2023-05-30").toISOString(),
       },
     });
     let saveSubject = await subject.save();
-    console.log(saveSubject);
     res.status(200).json(saveSubject);
   } catch (err) {
     res.status(500).json(err);
