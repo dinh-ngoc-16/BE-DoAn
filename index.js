@@ -10,9 +10,9 @@ dotenv.config();
 const PORT = process.env.PORT || 3500;
 
 const app = express();
-
+nameDB = "van_lang";
 mongoose
-  .connect(process.env.MONGO_URL)
+  .connect(`${process.env.MONGO_URL}${nameDB}`)
   .then(() => {
     console.log("Database connection successful");
   })

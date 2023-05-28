@@ -3,17 +3,44 @@ const jwt = require("jsonwebtoken");
 const Khoa = require("../models/van_lang/Khoa");
 const MonHoc = require("../models/van_lang/MonHoc");
 const SinhVien = require("../models/van_lang/SinhVien");
-const { verifyToken } = require("./VerifyToken");
+const { verifyToken, verifyTokenAndAuthorization } = require("./VerifyToken");
+//detail subject
+// router.get("/:id", async (req, res) => {
+//   try {
+//     let data = await MonHoc.find({
+//       _id: req.params.id,
+//     });
 
-router.get("/", async (req, res) => {
+//     res.status(200).json({ data, count: data.length });
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
+
+//schedule subject
+router.post("/", verifyTokenAndAuthorization, async (req, res) => {
   try {
-    let data = await MonHoc.find({
-      "lichHoc.ngayBD": {
-        $eq: new Date("2023-04-16"),
-      },
-    });
-
-    res.status(200).json({ data, count: data.length });
+    // let sinhVienData = await SinhVien.find({ _id: req.body.id })
+    //   .populate({
+    //     path: "MH",
+    //     match: {
+    //       "lichHoc.ngayBD": {
+    //         $lte: new Date(`${req.query.dtime}`),
+    //         // "2023-02-02"
+    //       },
+    //       "lichHoc.ngayKT": {
+    //         $gte: new Date(`${req.query.dtime}`),
+    //       },
+    //     },
+    //     options: {
+    //       sort: {
+    //         "lichHoc.ca": 1,
+    //       },
+    //     },
+    //   })
+    //   .exec();
+    let data = await MonHoc.find();
+    res.status(200).json({ data: data, count: data.length });
   } catch (err) {
     res.status(500).json(err);
   }

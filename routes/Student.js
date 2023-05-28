@@ -9,8 +9,7 @@ const { verifyTokenAndAuthorization } = require("./VerifyToken");
 router.get("/:id", verifyTokenAndAuthorization, async (req, res) => {
   try {
     let sinhVienData = await SinhVien.find({ _id: req.params.id })
-      .populate(["MH", "khoa"])
-      .exec();
+    .exec();
     res.status(200).json(sinhVienData[0]);
   } catch (error) {
     console.log(error);
