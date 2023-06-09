@@ -6,7 +6,7 @@ const SinhVienSchema = new mongoose.Schema(
     lopSV: { type: String, require: true },
     SDT: { type: Number, require: true },
     khoa: { type: mongoose.Types.ObjectId, require: true, ref: "Khoa" },
-    MH: [{ type: mongoose.Types.ObjectId, default: [], ref: "MonHoc" }],
+    LH: [{ type: mongoose.Types.ObjectId, default: [], ref: "LopHoc" }],
     MSSV: { type: String, require: true, unique: true },
     khoaHoc: { type: String, require: true },
     userName: { type: String, require: true },
