@@ -4,7 +4,7 @@ const Khoa = require("../models/van_lang/Khoa");
 const MonHoc = require("../models/van_lang/MonHoc");
 const SinhVien = require("../models/van_lang/SinhVien");
 const LopHoc = require("../models/van_lang/LopHoc");
-const { verifyToken, verifyTokenAndAuthorization } = require("./VerifyToken");
+const { verifyTokenAndAuthorization } = require("./VerifyToken");
 //detail subject
 // router.get("/:id", async (req, res) => {
 //   try {
@@ -48,14 +48,15 @@ router.get("/:id", verifyTokenAndAuthorization, async (req, res) => {
 
     for (let i = 0; i < sinhVienData.LH.length; i++) {
       let dataTemp = sinhVienData.LH[i];
-      let temp = [...dataTemp.thoiGian.gioHoc];
-      dataTemp.thoiGian.gioHoc = temp.filter(
+      dataTemp.thoiGian.gioHoc = dataTemp.thoiGian.gioHoc.filter(
         (item) => item.thu == weekday[new Date(req.query.date).getDay()],
       );
-      if (dataTemp.thoiGian.gioHoc.length == 0) {
-        sinhVienData.LH.splice(i, 1);
-      }
     }
+
+    sinhVienData.LH = sinhVienData.LH.filter(
+      (item) => item.thoiGian.gioHoc.length > 0,
+    );
+
     res
       .status(200)
       .json({ data: sinhVienData.LH, count: sinhVienData.LH.length });
