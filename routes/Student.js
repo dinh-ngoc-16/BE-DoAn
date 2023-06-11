@@ -8,8 +8,7 @@ const { verifyTokenAndAuthorization } = require("./VerifyToken");
 
 router.get("/:id", verifyTokenAndAuthorization, async (req, res) => {
   try {
-    let sinhVienData = await SinhVien.find({ _id: req.params.id })
-    .exec();
+    let sinhVienData = await SinhVien.find({ _id: req.params.id }).exec();
     res.status(200).json(sinhVienData[0]);
   } catch (error) {
     console.log(error);
@@ -68,6 +67,7 @@ router.post("/login", async (req, res) => {
     );
 
     const { _id } = student._doc;
+
     res.status(200).json({ id: _id, accessToken });
   } catch (err) {
     res.status(500).json(err);

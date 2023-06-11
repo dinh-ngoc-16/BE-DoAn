@@ -7,6 +7,7 @@ const SinhVienSchema = new mongoose.Schema(
     SDT: { type: Number, require: true },
     khoa: { type: mongoose.Types.ObjectId, require: true, ref: "Khoa" },
     LH: [{ type: mongoose.Types.ObjectId, default: [], ref: "LopHoc" }],
+    KT: [{ type: mongoose.Types.ObjectId, default: [], ref: "LichKT" }],
     MSSV: { type: String, require: true, unique: true },
     khoaHoc: { type: String, require: true },
     userName: { type: String, require: true },

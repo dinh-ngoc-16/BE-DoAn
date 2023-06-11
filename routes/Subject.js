@@ -1,27 +1,14 @@
+require("../models/van_lang/LopHoc");
+require("../models/van_lang/GiangVien");
 const router = require("express").Router();
-const jwt = require("jsonwebtoken");
-const Khoa = require("../models/van_lang/Khoa");
-const MonHoc = require("../models/van_lang/MonHoc");
+const LichKT = require("../models/van_lang/LichKT");
 const SinhVien = require("../models/van_lang/SinhVien");
-const LopHoc = require("../models/van_lang/LopHoc");
 const { verifyTokenAndAuthorization } = require("./VerifyToken");
-//detail subject
-// router.get("/:id", async (req, res) => {
-//   try {
-//     let data = await MonHoc.find({
-//       _id: req.params.id,
-//     });
-
-//     res.status(200).json({ data, count: data.length });
-//   } catch (err) {
-//     res.status(500).json(err);
-//   }
-// });
 
 const weekday = ["CN", "2", "3", "4", "5", "6", "7"];
 
 //schedule subject
-router.get("/:id", verifyTokenAndAuthorization, async (req, res) => {
+router.get("/lichhoc/:id", verifyTokenAndAuthorization, async (req, res) => {
   try {
     let sinhVienData = await SinhVien.findOne({ _id: req.params.id }).populate({
       path: "LH",
@@ -39,10 +26,17 @@ router.get("/:id", verifyTokenAndAuthorization, async (req, res) => {
           },
         ],
       },
-      populate: {
-        path: "id_MonHoc",
-        select: "id tenMonHoc TC",
-      },
+      populate: [
+        {
+          path: "id_MonHoc",
+          select: "id tenMonHoc TC",
+        },
+        {
+          path: "thoiGian.gioHoc.GV",
+          select: "id tenGV",
+        },
+      ],
+
       options: { sort: { "thoiGian.gioHoc.ca": 1 } },
     });
 
@@ -61,28 +55,50 @@ router.get("/:id", verifyTokenAndAuthorization, async (req, res) => {
       .status(200)
       .json({ data: sinhVienData.LH, count: sinhVienData.LH.length });
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/lichkt/:id", verifyTokenAndAuthorization, async (req, res) => {
   try {
-    let sinhVienData = await LopHoc.find({
-      $and: [
-        {
-          "thoiGian.ngayBD": {
-            $lte: new Date(`2023-04-16`),
-          },
+    let dataGet;
+
+    if (
+      req.query.all == undefined ||
+      req.query.all == "" ||
+      req.query.all == "now"
+    ) {
+      dataGet = await SinhVien.findOne({
+        _id: req.params.id,
+      }).populate({
+        path: "KT",
+        match: {
+          $or: [
+            {
+              "chiTiet.thoiGianThi": {
+                $gte: Date.now(),
+              },
+            },
+            {
+              "thiLai.thoiGianThi": {
+                $gte: Date.now(),
+              },
+            },
+          ],
         },
-        {
-          "thoiGian.ngayKT": {
-            $gte: new Date(`2023-04-16`),
-          },
-        },
-      ],
-    }).exec();
-    // let data = await MonHoc.find();
-    res.status(200).json({ data: sinhVienData, count: sinhVienData.length });
+        options: { sort: { "chiTiet.thoiGianThi": 1 } },
+      });
+    } else if (req.query.all == "all") {
+      dataGet = await SinhVien.findOne({
+        _id: req.params.id,
+      }).populate({
+        path: "KT",
+        options: { sort: { "chiTiet.thoiGianThi": 1 } },
+      });
+    }
+
+    res.status(200).json({ data: dataGet.KT, count: dataGet.KT.length });
   } catch (err) {
     res.status(500).json(err);
   }
@@ -90,28 +106,22 @@ router.get("/", async (req, res) => {
 
 router.post("/create", async (req, res) => {
   try {
-    let subject = new LopHoc({
-      maLopHoc: "DIT11155",
-      id_MonHoc: "6480cbd818670ee33bb6e575",
-      thoiGian: {
-        ngayBD: new Date("2023-02-01").toISOString(),
-        ngayKT: new Date("2023-04-30").toISOString(),
-        gioHoc: [
-          {
-            diaDiem: "CS3",
-            thu: "2",
-            phong: "F06-03",
-            ca: 2,
-            loai: "LT",
-          },
-          {
-            diaDiem: "CS3",
-            thu: "7",
-            phong: "F12-02",
-            ca: 3,
-            loai: "TH",
-          },
-        ],
+    let subject = new LichKT({
+      id_LopHoc: "6480da76f0ed58e5e65be167",
+      hoanThanh: false,
+      chiTiet: {
+        thoiGianThi: new Date("2023-06-25T08:30:00").toISOString(),
+        diaDiem: "CS3",
+        phong: "F06-03",
+        thoiGian: 75,
+        hinhThucThi: "TL",
+      },
+      thiLai: {
+        thoiGianThi: new Date("2023-07-15T07:30:00").toISOString(),
+        diaDiem: "CS3",
+        phong: "F06-03",
+        thoiGian: 75,
+        hinhThucThi: "TL",
       },
     });
     let saveSubject = await subject.save();

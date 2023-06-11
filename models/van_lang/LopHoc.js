@@ -14,6 +14,11 @@ const LopHocSchema = new mongoose.Schema(
           phong: { type: String, require: true },
           ca: { type: Number, require: true },
           loai: { type: String, require: true },
+          GV: {
+            type: mongoose.Types.ObjectId,
+            require: true,
+            ref: "GiangVien",
+          },
         },
       ],
     },
