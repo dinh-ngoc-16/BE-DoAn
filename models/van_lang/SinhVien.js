@@ -11,8 +11,15 @@ const SinhVienSchema = new mongoose.Schema(
     MSSV: { type: String, require: true, unique: true },
     khoaHoc: { type: String, require: true },
     userName: { type: String, require: true },
-    // nhớ hash passowrd
     pass: { type: String, require: true },
+    gioiTinh: { type: String, require: true },
+    queQuan: { type: String, require: true },
+    thanNhan: [
+      {
+        hoTenThanNhan: { type: String, require: false },
+        sdt: { type: Number, require: false },
+      },
+    ],
   },
   { timestamps: true },
 );
