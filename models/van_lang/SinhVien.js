@@ -13,11 +13,16 @@ const SinhVienSchema = new mongoose.Schema(
     userName: { type: String, require: true },
     pass: { type: String, require: true },
     gioiTinh: { type: String, require: true },
+    dob: { type: Date, require: true },
     queQuan: { type: String, require: true },
+    coVan: { type: mongoose.Types.ObjectId, require: true, ref: "GiangVien" },
     thanNhan: [
       {
         hoTenThanNhan: { type: String, require: false },
         sdt: { type: Number, require: false },
+        vaiTro: { type: String, require: true },
+        gioiTinh: { type: String, require: true },
+        dob: { type: Date, require: true },
       },
     ],
   },

@@ -4,6 +4,7 @@ const router = require("express").Router();
 const LichKT = require("../models/van_lang/LichKT");
 const LopHoc = require("../models/van_lang/LopHoc");
 const SinhVien = require("../models/van_lang/SinhVien");
+const KetQua = require("../models/van_lang/KetQua");
 const { verifyTokenAndAuthorization, verifyToken } = require("./VerifyToken");
 
 const weekday = ["CN", "2", "3", "4", "5", "6", "7"];
@@ -63,7 +64,7 @@ router.get("/lichhoc/:idUser", async (req, res) => {
   }
 });
 
-router.get("/detail/:idMonHoc", verifyToken, async (req, res) => {
+router.get("/lopHoc/detail/:idMonHoc", verifyToken, async (req, res) => {
   try {
     let detailMonHoc = await LopHoc.findOne({
       _id: req.params.idMonHoc,
@@ -165,7 +166,7 @@ router.get("/lichkt/:id", verifyTokenAndAuthorization, async (req, res) => {
   }
 });
 
-router.get("/lichkt/detail/:id", verifyToken, async (req, res) => {
+router.get("/lopKT/detail/:id", verifyToken, async (req, res) => {
   try {
     let dataGet;
     dataGet = await LichKT.findOne({
@@ -189,25 +190,74 @@ router.get("/lichkt/detail/:id", verifyToken, async (req, res) => {
   }
 });
 
+router.get("/ketQua/:id", verifyToken, async (req, res) => {
+  try {
+    let dataGet;
+    dataGet = await KetQua.find({
+      id_SV: req.params.id,
+    })
+      .select("id_LopHoc pass tongDiem")
+      .populate({
+        path: "id_LopHoc",
+        select: "maLopHoc id_MonHoc",
+        populate: {
+          path: "id_MonHoc",
+          select: "tenMonHoc maMonHoc",
+        },
+      });
+
+    res.status(200).json({ data: dataGet, count: 1 });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+router.get("/ketQua/detail/:id", verifyToken, async (req, res) => {
+  try {
+    let dataGet;
+    dataGet = await KetQua.findOne({
+      _id: req.params.id,
+    })
+      .select("id_LopHoc pass tongDiem chiTiet")
+      .populate({
+        path: "id_LopHoc",
+        select: "id_MonHoc",
+        populate: {
+          path: "id_MonHoc",
+          select: "tenMonHoc maMonHoc",
+        },
+      });
+
+    res.status(200).json({ data: dataGet, count: 1 });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+//for admin site
 router.post("/create", async (req, res) => {
   try {
-    let subject = new LichKT({
-      id_LopHoc: "6480da76f0ed58e5e65be167",
-      hoanThanh: false,
-      chiTiet: {
-        thoiGianThi: new Date("2023-06-25T08:30:00").toISOString(),
-        diaDiem: "CS3",
-        phong: "F06-03",
-        thoiGian: 75,
-        hinhThucThi: "TL",
-      },
-      thiLai: {
-        thoiGianThi: new Date("2023-07-15T07:30:00").toISOString(),
-        diaDiem: "CS3",
-        phong: "F06-03",
-        thoiGian: 75,
-        hinhThucThi: "TL",
-      },
+    let subject = new KetQua({
+      id_LopHoc: "6480dafb0b57a66b26bcdc85",
+      id_SV: "643d8ec08852f7ae45d9377d",
+      chiTiet: [
+        {
+          title: "Điểm danh",
+          phanTram: 10,
+          diem: 8,
+        },
+        {
+          title: "Giữa kì",
+          phanTram: 40,
+          diem: 8.5,
+        },
+        {
+          title: "Cuối kì",
+          phanTram: 50,
+          diem: 9,
+        },
+      ],
+      pass: true,
     });
     let saveSubject = await subject.save();
     res.status(200).json(saveSubject);

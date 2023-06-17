@@ -4,11 +4,24 @@ const jwt = require("jsonwebtoken");
 const Khoa = require("../models/van_lang/Khoa");
 const MonHoc = require("../models/van_lang/MonHoc");
 const SinhVien = require("../models/van_lang/SinhVien");
+require("../models/van_lang/GiangVien");
 const { verifyTokenAndAuthorization } = require("./VerifyToken");
 
 router.get("/:id", verifyTokenAndAuthorization, async (req, res) => {
   try {
-    let sinhVienData = await SinhVien.find({ _id: req.params.id }).exec();
+    let sinhVienData = await SinhVien.find({ _id: req.params.id })
+      .select(
+        "id tenSV lopSV SDT khoa MSSV khoaHoc gioiTinh queQuan thanNhan dob coVan",
+      )
+      .populate({
+        path: "khoa",
+        select: "tenKhoa",
+      })
+      .populate({
+        path: "coVan",
+        select: "tenGV SDT",
+      })
+      .exec();
     res.status(200).json(sinhVienData[0]);
   } catch (error) {
     console.log(error);
