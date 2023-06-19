@@ -7,7 +7,7 @@ const Subject = require("./routes/Subject.js");
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3004;
+const PORT = process.env.PORT || 3500;
 
 const app = express();
 nameDB = "van_lang";

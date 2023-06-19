@@ -199,14 +199,17 @@ router.get("/ketQua/:id", verifyToken, async (req, res) => {
       .select("id_LopHoc pass tongDiem")
       .populate({
         path: "id_LopHoc",
-        select: "maLopHoc id_MonHoc",
+        select: "maLopHoc id_MonHoc thoiGian.ngayKT",
         populate: {
           path: "id_MonHoc",
           select: "tenMonHoc maMonHoc",
         },
+      })
+      .sort({
+        "id_LopHoc.thoiGian.ngayKT": 1,
       });
 
-    res.status(200).json({ data: dataGet, count: 1 });
+    res.status(200).json({ data: dataGet, count: dataGet.length });
   } catch (err) {
     res.status(500).json(err);
   }
@@ -216,7 +219,7 @@ router.get("/ketQua/detail/:id", verifyToken, async (req, res) => {
   try {
     let dataGet;
     dataGet = await KetQua.findOne({
-      _id: req.params.id,
+      $or: [{ _id: req.params.id }, { id_LopHoc: req.params.id }],
     })
       .select("id_LopHoc pass tongDiem chiTiet")
       .populate({
@@ -237,27 +240,76 @@ router.get("/ketQua/detail/:id", verifyToken, async (req, res) => {
 //for admin site
 router.post("/create", async (req, res) => {
   try {
-    let subject = new KetQua({
-      id_LopHoc: "6480dafb0b57a66b26bcdc85",
-      id_SV: "643d8ec08852f7ae45d9377d",
-      chiTiet: [
+    let subject = new SinhVien({
+      /**
+       * Paste one or more documents here
+       */
+
+      tenSV: "Huỳnh Tấn Sĩ",
+      lopSV: "IT7",
+      SDT: 1234567890,
+
+      khoa: "6408d07d4f19e1d44681911d",
+
+      MSSV: "197CT16969",
+      khoaHoc: "K25",
+      userName: "si",
+      pass: "",
+      createdAt: {
+        $date: "2023-04-17T18:24:00.987Z",
+      },
+      updatedAt: {
+        $date: "2023-04-18T02:39:33.519Z",
+      },
+      __v: 0,
+      LH: [
         {
-          title: "Điểm danh",
-          phanTram: 10,
-          diem: 8,
+          $oid: "6480da76f0ed58e5e65be167",
         },
         {
-          title: "Giữa kì",
-          phanTram: 40,
-          diem: 8.5,
-        },
-        {
-          title: "Cuối kì",
-          phanTram: 50,
-          diem: 9,
+          $oid: "6480dafb0b57a66b26bcdc85",
         },
       ],
-      pass: true,
+      KT: [
+        {
+          $oid: "648614a50a7d4d8d9b853fc8",
+        },
+        {
+          $oid: "648614cf76679ce43e9779a0",
+        },
+      ],
+      gioiTinh: "Nam",
+      queQuan: "HCM",
+      thanNhan: [
+        {
+          hoTenThanNhan: "Trần Văn Học",
+          sdt: {
+            $numberLong: "123121312",
+          },
+          dob: {
+            $date: "1978-07-17T00:00:00.000Z",
+          },
+          gioiTinh: "Nam",
+          vaiTro: "Cha",
+        },
+        {
+          hoTenThanNhan: "Nguyễn Thu Hà",
+          sdt: {
+            $numberLong: "3331413414",
+          },
+          dob: {
+            $date: "1980-11-25T00:00:00.000Z",
+          },
+          gioiTinh: "Nữ",
+          vaiTro: "Mẹ",
+        },
+      ],
+      dob: {
+        $date: "2001-04-17T00:00:00.000Z",
+      },
+      coVan: {
+        $oid: "6408d8c725562144e5d9ca8d",
+      },
     });
     let saveSubject = await subject.save();
     res.status(200).json(saveSubject);
