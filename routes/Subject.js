@@ -1,10 +1,12 @@
+const router = require("express").Router();
 const GiangVien = require("../models/van_lang/GiangVien");
 const MonHoc = require("../models/van_lang/MonHoc");
-const router = require("express").Router();
 const LichKT = require("../models/van_lang/LichKT");
 const LopHoc = require("../models/van_lang/LopHoc");
 const SinhVien = require("../models/van_lang/SinhVien");
 const KetQua = require("../models/van_lang/KetQua");
+const ThacMac = require("../models/van_lang/ThacMac");
+const TraLoi = require("../models/van_lang/TraLoi");
 const { verifyTokenAndAuthorization, verifyToken } = require("./VerifyToken");
 
 const weekday = ["CN", "2", "3", "4", "5", "6", "7"];
@@ -232,6 +234,32 @@ router.get("/ketQua/detail/:id", verifyToken, async (req, res) => {
       });
 
     res.status(200).json({ data: dataGet, count: 1 });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+//create a question from parents
+router.post("/create/question", async (req, res) => {
+  console.log(req.body);
+  try {
+    let question = new ThacMac({ ...req.body });
+    let saveQuestion = await question.save();
+    res.status(200).json(saveQuestion);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+router.get("/list/question/:id", async (req, res) => {
+  try {
+    let question = await ThacMac.find({
+      id_SinhVien: req.params.id,
+    })
+      .select("cauHoi trangThai createdAt")
+      .sort({ createdAt: 1 });
+
+    res.status(200).json({ data: question, count: question.length });
   } catch (err) {
     res.status(500).json(err);
   }
