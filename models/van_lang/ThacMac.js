@@ -12,11 +12,9 @@ const ThacMacSchema = new mongoose.Schema(
     trangThai: { type: Boolean, default: false },
     trl: [
       {
-        id_cauTRL: {
-          type: mongoose.Types.ObjectId,
-          require: true,
-          ref: "TraLoi",
-        },
+        type: mongoose.Types.ObjectId,
+        require: true,
+        ref: "TraLoi",
       },
     ],
   },

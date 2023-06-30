@@ -240,7 +240,7 @@ router.get("/ketQua/detail/:id", verifyToken, async (req, res) => {
 });
 
 //create a question from parents
-router.post("/create/question", async (req, res) => {
+router.post("/create/question", verifyToken, async (req, res) => {
   console.log(req.body);
   try {
     let question = new ThacMac({ ...req.body });
@@ -251,15 +251,28 @@ router.post("/create/question", async (req, res) => {
   }
 });
 
-router.get("/list/question/:id", async (req, res) => {
+router.get("/list/question/:id", verifyToken, async (req, res) => {
   try {
     let question = await ThacMac.find({
       id_SinhVien: req.params.id,
     })
-      .select("cauHoi trangThai createdAt")
-      .sort({ createdAt: 1 });
+      .select("title cauHoi trangThai createdAt")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({ data: question, count: question.length });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+router.get("/detail/question/:id", verifyToken, async (req, res) => {
+  try {
+    let question = await ThacMac.findOne({
+      _id: req.params.id,
+    }).populate({
+      path: "trl",
+    });
+    res.status(200).json({ data: question });
   } catch (err) {
     res.status(500).json(err);
   }
