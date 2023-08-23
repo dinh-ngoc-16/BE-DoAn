@@ -58,7 +58,7 @@ router.post("/login", async (req, res) => {
         id: student.id,
       },
       process.env.JWT_SEC,
-      { expiresIn: "1d" },
+      { expiresIn: "15000" },
     );
 
     const { _id } = student._doc;
