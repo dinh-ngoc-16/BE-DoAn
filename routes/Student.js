@@ -8,25 +8,7 @@ require("../models/van_lang/GiangVien");
 const { verifyTokenAndAuthorization } = require("./VerifyToken");
 
 router.get("/:id", verifyTokenAndAuthorization, async (req, res) => {
-  try {
-    let sinhVienData = await SinhVien.find({ _id: req.params.id })
-      .select(
-        "id tenSV lopSV SDT khoa MSSV khoaHoc gioiTinh queQuan thanNhan dob coVan",
-      )
-      .populate({
-        path: "khoa",
-        select: "tenKhoa",
-      })
-      .populate({
-        path: "coVan",
-        select: "tenGV SDT",
-      })
-      .exec();
-    res.status(200).json(sinhVienData[0]);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
-  }
+  res.status(200).json("Successful");
 });
 
 router.post("/register", async (req, res) => {
